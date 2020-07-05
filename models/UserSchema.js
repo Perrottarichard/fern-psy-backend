@@ -10,7 +10,9 @@ const userSchema = mongoose.Schema({
   },
   passwordHash: String,
   dateOfBirth: Date,
-  gender: String
+  gender: String,
+  email: String,
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }]
 })
 
 userSchema.set('toJSON', {
