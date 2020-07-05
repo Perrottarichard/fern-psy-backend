@@ -10,7 +10,7 @@ router.get('/', async (request, response) => {
 })
 
 //post a new user "signup"
-router.post('/signup', async (request, response) => {
+router.post('/register', async (request, response) => {
   const { password, name, username, gender, dateOfBirth, email } = request.body
 
   if (!password || password.length < 5 || !username || !name) {
