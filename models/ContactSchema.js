@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const contactFormSchema = mongoose.Schema({
   name: String,
   email: String,
-  line: String,
+  LINE: String,
   message: String,
   date: Date,
 })
