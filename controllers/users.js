@@ -9,7 +9,7 @@ router.get('/', async (request, response) => {
   response.json(users.map(u => u.toJSON()))
 })
 
-//post a new user "signup"
+//post a new user "signup" "register"
 router.post('/register', async (request, response) => {
   const { password, name, username, gender, dateOfBirth, email } = request.body
 
