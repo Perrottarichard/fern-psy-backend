@@ -39,6 +39,9 @@ app.use('/api/contact', contactRouter)
 app.get('/api', (req, res) => {
   res.send('<h1>Welcome to the backend!</h1>')
 })
+app.get('/admin', (req, res) => {
+  res.send('root/admin')
+})
 
 
 let PORT = process.env.PORT || 3001
