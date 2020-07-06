@@ -8,7 +8,7 @@ const loginRouter = require('./controllers/userLogin')
 const userRouter = require('./controllers/users')
 const forumRouter = require('./controllers/forum')
 // const adminRouter = require('./controllers/adminLogin')
-// const contactRouter = require('./controllers/contact')
+const contactRouter = require('./controllers/contact')
 
 const app = express()
 app.use(middleware.tokenExtractor)
@@ -33,7 +33,7 @@ app.use('/api/login', loginRouter)
 app.use('/api/users', userRouter)
 app.use('/api/forum', forumRouter)
 // app.use('/api/admin', adminRouter)
-// app.use('/api/contact', contactRouter)
+app.use('/api/contact', contactRouter)
 
 //test the backend router
 app.get('/api', (req, res) => {

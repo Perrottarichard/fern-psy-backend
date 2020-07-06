@@ -6,7 +6,7 @@ const router = express.Router()
 
 
 //existing user login
-router.post('/'), async (request, response) => {
+router.post('/', async (request, response) => {
   const body = request.body
   const user = await User.findOne({ username: body.username })
 
@@ -28,6 +28,6 @@ router.post('/'), async (request, response) => {
   const token = jwt.sign(userForToken, process.env.SECRET)
 
   response.status(200).send({ token, username: user.username, name: user.name })
-}
+})
 
 module.exports = router
