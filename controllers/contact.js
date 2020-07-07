@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
   res.status(200).send(contacts)
 })
 
+//set specific contact's "hidden" property to "true" in order to exclude it from ui
 router.put('/:id', async (req, res) => {
   const modifiedContact = req.body
   const updatedContact = await Contact.findByIdAndUpdate(req.params.id, { hidden: modifiedContact.hidden }, { new: true })
