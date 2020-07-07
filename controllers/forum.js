@@ -6,9 +6,14 @@ const User = require('../models/UserSchema')
 const Admin = require('../models/AdminSchema')
 const router = express.Router()
 
-router.get('/', async (request, response) => {
-  const questions = await Question.find({})
+router.get('/pending', async (request, response) => {
+  const questions = await Question.find({ isAnswered: false }).populate('user')
   response.json(questions)
+})
+
+router.get('/answered', async (request, response) => {
+  const answered = await Question.find({ isAnswered: true })
+  response.json(answered)
 })
 
 router.post('/', async (request, response) => {
@@ -35,6 +40,12 @@ router.post('/', async (request, response) => {
   await user.save()
 
   response.status(201).json(savedQuestion)
+})
+
+router.put('/:id', async (req, res) => {
+  const body = req.body
+  const answeredPost = await Question.findByIdAndUpdate(req.params.id, { isAnswered: true, answer: body.answer }, { new: true })
+  res.json(answeredPost)
 })
 
 module.exports = router
