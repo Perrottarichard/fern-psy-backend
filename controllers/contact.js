@@ -1,6 +1,5 @@
 const express = require('express')
 const Contact = require('../models/ContactSchema')
-const { response } = require('express')
 
 const router = express.Router()
 
@@ -12,7 +11,8 @@ router.post('/', async (request, response) => {
     LINE: body.LINE,
     email: body.email,
     message: body.message,
-    date: Date.now()
+    date: Date.now(),
+    hidden: false
   })
   await contact.save()
   response.status(200).send(contact)
@@ -22,6 +22,12 @@ router.post('/', async (request, response) => {
 router.get('/', async (req, res) => {
   const contacts = await Contact.find({})
   res.status(200).send(contacts)
+})
+
+router.put('/:id', async (req, res) => {
+  const modifiedContact = req.body
+  const updatedContact = await Contact.findByIdAndUpdate(req.params.id, { hidden: modifiedContact.hidden }, { new: true })
+  res.status(200).send(updatedContact)
 })
 
 module.exports = router

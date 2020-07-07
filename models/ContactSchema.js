@@ -6,6 +6,7 @@ const contactFormSchema = mongoose.Schema({
   LINE: String,
   message: String,
   date: Date,
+  hidden: Boolean
 })
 
 module.exports = mongoose.model('Contact', contactFormSchema)
