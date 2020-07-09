@@ -36,7 +36,7 @@ app.use('/api/admin', adminRouter)
 app.use('/api/contact', contactRouter)
 
 app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build/*'))
+  res.sendFile(path.join(__dirname, 'build/static/*'))
 })
 
 //test the backend router
