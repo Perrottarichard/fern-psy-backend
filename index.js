@@ -10,6 +10,8 @@ const forumRouter = require('./controllers/forum')
 const adminRouter = require('./controllers/adminLogin')
 const contactRouter = require('./controllers/contact')
 
+const path = require('path')
+
 const app = express()
 app.use(middleware.tokenExtractor)
 
@@ -27,7 +29,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 app.use(cors())
 app.use(express.json())
-app.use(express.static('build'))
+app.use(express.static(path.join(__dirname, 'build')))
 
 app.use('/api/login', loginRouter)
 app.use('/api/users', userRouter)
@@ -36,7 +38,7 @@ app.use('/api/admin', adminRouter)
 app.use('/api/contact', contactRouter)
 
 app.get('*', (request, response) => {
-  response.sendFile(path.join(__dirname, 'build', 'index'));
+  response.sendFile(path.join(__dirname + '/build/index.html'));
 });
 
 //test the backend router
