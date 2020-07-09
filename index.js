@@ -37,7 +37,7 @@ app.use('/api/contact', contactRouter)
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build'))
-}).catch(error => console.log(error))
+})
 
 //test the backend router
 app.get('/api', (req, res) => {
