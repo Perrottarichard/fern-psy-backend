@@ -35,12 +35,9 @@ app.use('/api/forum', forumRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/contact', contactRouter)
 
-app.get('/*', (req, res) => {
-  if (error) {
-    console.log(error)
-  }
-  res.sendFile(path.join(__dirname, '/build/index.html'))
-})
+app.get('*', (request, response) => {
+  response.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 //test the backend router
 app.get('/api', (req, res) => {
