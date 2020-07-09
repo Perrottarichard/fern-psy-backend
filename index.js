@@ -35,6 +35,10 @@ app.use('/api/forum', forumRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/contact', contactRouter)
 
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build/*'))
+})
+
 //test the backend router
 app.get('/api', (req, res) => {
   res.send('<h1>Welcome to the backend!</h1>')
