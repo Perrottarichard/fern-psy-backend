@@ -7,7 +7,7 @@ const forumQuestionSchema = mongoose.Schema({
   isAnswered: Boolean,
   tags: [String],
   date: { type: Date, default: Date.now },
-  comments: [{ body: String, date: Date }],
+  comments: [{ content: String, date: { type: Date, default: Date.now }, isApproved: Boolean }],
   likes: Number,
   user: {
     type: mongoose.Schema.Types.ObjectID,

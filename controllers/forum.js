@@ -48,4 +48,14 @@ router.put('/:id', async (req, res) => {
   res.json(answeredPost)
 })
 
+router.put('/addcomment/:id', async (req, res) => {
+  const body = req.body
+  console.log(body)
+  const finalComment = { content: req.body.comment, isApproved: false }
+  const commentAdded = await Question.findByIdAndUpdate(req.params.id, {
+    $push: { comments: finalComment }
+  })
+  res.json(commentAdded)
+})
+
 module.exports = router
