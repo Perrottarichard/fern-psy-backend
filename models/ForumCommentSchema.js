@@ -2,10 +2,8 @@
 const mongoose = require('mongoose')
 
 const forumCommentSchema = mongoose.Schema({
-  comment: String,
-  date: Date,
-  likes: Number,
-  approved: Boolean,
+  content: String,
+  date: { type: Date, default: Date.now },
   user: {
     type: mongoose.Schema.Types.ObjectID,
     ref: 'User'

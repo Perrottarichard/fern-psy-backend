@@ -15,7 +15,7 @@ router.post('/register', async (request, response) => {
 
   if (!password || password.length < 5 || !username || !name) {
     return response.status(400).send({
-      error: 'password must be at least 5 characters and must contain username and name'
+      error: 'password must be at least 8 characters and you must include a username and name'
     })
   }
 

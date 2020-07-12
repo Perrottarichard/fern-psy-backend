@@ -7,10 +7,15 @@ const forumQuestionSchema = mongoose.Schema({
   isAnswered: Boolean,
   tags: [String],
   date: { type: Date, default: Date.now },
-  comments: [{ content: String, date: { type: Date, default: Date.now }, isApproved: Boolean }],
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment'
+    }
+  ],
   likes: Number,
   user: {
-    type: mongoose.Schema.Types.ObjectID,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }
 })

@@ -12,7 +12,8 @@ const userSchema = mongoose.Schema({
   dateOfBirth: Date,
   gender: String,
   email: String,
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }]
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 })
 
 userSchema.set('toJSON', {
