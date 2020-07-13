@@ -12,7 +12,14 @@ router.get('/pending', async (request, response) => {
 })
 
 router.get('/answered', async (request, response) => {
-  const answered = await Question.find({ isAnswered: true }).populate('comments')
+  const answered = await Question.find({ isAnswered: true }).populate({
+    path: 'comments',
+    model: 'Comment',
+    populate: {
+      path: 'user',
+      model: 'User'
+    }
+  })
   response.json(answered)
 })
 
@@ -50,23 +57,20 @@ router.put('/:id', async (req, res) => {
 
 router.put('/addcomment/:id', async (request, response) => {
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
-
   if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' })
   }
   const user = await User.findById(decodedToken.id)
-  const comment = new Comment({
-    content: request.body.comment,
-    user: user
-  })
-
-  if (!request.body.comment) {
-    return response.status(400).send({ error: 'comment missing' })
+  const toAdd = {
+    content: request.body.comment
   }
+  const comment = new Comment(toAdd)
 
+  comment.user = user
   const savedComment = await comment.save()
 
   user.comments = user.comments.concat(savedComment._id)
+  await user.save()
 
   const commentAdded = await Question.findByIdAndUpdate(request.params.id, {
     $push: { comments: comment }
@@ -74,10 +78,10 @@ router.put('/addcomment/:id', async (request, response) => {
   response.json(commentAdded)
 })
 
-router.put('/:id/heart', async (req, res) => {
+router.put('/heart/:id', async (req, res) => {
   const body = req.body
-  const commentAdded = await Question.findByIdAndUpdate(req.params.id, body)
-  res.json(commentAdded)
+  const heartAdded = await Question.findByIdAndUpdate(req.params.id, body)
+  res.json(heartAdded)
 })
 
 module.exports = router
