@@ -74,7 +74,14 @@ router.put('/addcomment/:id', async (request, response) => {
 
   const commentAdded = await Question.findByIdAndUpdate(request.params.id, {
     $push: { comments: comment }
-  }, { new: true })
+  }, { new: true }).populate({
+    path: 'comments',
+    model: 'Comment',
+    populate: {
+      path: 'user',
+      model: 'User'
+    }
+  })
   response.json(commentAdded)
 })
 
