@@ -11,6 +11,17 @@ router.get('/pending', async (request, response) => {
   response.json(questions)
 })
 
+router.delete('/:id', async (request, response) => {
+  const questionId = request.params.id
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  } else {
+    await Question.findOneAndDelete({ _id: questionId })
+    response.status(201).send('question deleted successfully')
+  }
+})
+
 router.get('/answered', async (request, response) => {
   const answered = await Question.find({ isAnswered: true }).populate({
     path: 'comments',
