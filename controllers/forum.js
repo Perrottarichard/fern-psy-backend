@@ -22,6 +22,17 @@ router.delete('/:id', async (request, response) => {
   }
 })
 
+router.delete('/comment/:id', async (request, response) => {
+  const commentId = request.params.id
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  } else {
+    await Comment.findOneAndDelete({ _id: commentId })
+    response.status(201).send('comment deleted successfully')
+  }
+})
+
 router.get('/answered', async (request, response) => {
   const answered = await Question.find({ isAnswered: true }).populate({
     path: 'comments',
@@ -66,6 +77,11 @@ router.put('/:id', async (req, res) => {
   res.json(answeredPost)
 })
 
+router.put('/flag/:id', async (req, res) => {
+  const flaggedComment = await Comment.findByIdAndUpdate(req.params.id, { isFlagged: true }, { new: true }).populate('user')
+  res.json(flaggedComment)
+})
+
 router.put('/addcomment/:id', async (request, response) => {
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if (!request.token || !decodedToken.id) {
@@ -100,6 +116,11 @@ router.put('/heart/:id', async (req, res) => {
   const body = req.body
   const heartAdded = await Question.findByIdAndUpdate(req.params.id, body)
   res.json(heartAdded)
+})
+
+router.get('/flagged', async (req, res) => {
+  const flaggedComments = await Comment.find({ isFlagged: true }).populate('user')
+  res.json(flaggedComments)
 })
 
 module.exports = router

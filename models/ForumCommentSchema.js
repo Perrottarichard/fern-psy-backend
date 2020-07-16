@@ -7,7 +7,8 @@ const forumCommentSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  isFlagged: { type: Boolean, default: false }
 })
 
 module.exports = mongoose.model("Comment", forumCommentSchema)
