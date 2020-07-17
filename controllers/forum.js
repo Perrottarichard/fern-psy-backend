@@ -33,6 +33,20 @@ router.delete('/comment/:id', async (request, response) => {
   }
 })
 
+router.put('/comment/unflag/:id', async (request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  } else {
+    try {
+      await Comment.findByIdAndUpdate(request.params.id, { isFlagged: false })
+      response.status(201).send('comment unflagged successfully')
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+})
+
 router.get('/answered', async (request, response) => {
   const answered = await Question.find({ isAnswered: true }).populate({
     path: 'comments',
