@@ -90,7 +90,6 @@ router.post('/', async (request, response) => {
 
 router.put('/:id', async (req, res) => {
   const body = req.body
-  console.log('body', body)
   const answer = new Answer(
     {
       answer: body.answer,
