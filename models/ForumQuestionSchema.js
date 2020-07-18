@@ -3,7 +3,11 @@ const mongoose = require('mongoose')
 const forumQuestionSchema = mongoose.Schema({
   title: String,
   question: String,
-  answer: String,
+  answer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Answer',
+    default: null
+  },
   isAnswered: Boolean,
   tags: [String],
   date: { type: Date, default: Date.now },

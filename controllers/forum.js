@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const Question = require('../models/ForumQuestionSchema')
 const Comment = require('../models/ForumCommentSchema')
 const User = require('../models/UserSchema')
-const Admin = require('../models/AdminSchema')
+const Answer = require('../models/ForumAnswerSchema')
 const router = express.Router()
 
 router.get('/pending', async (request, response) => {
@@ -55,7 +55,7 @@ router.get('/answered', async (request, response) => {
       path: 'user',
       model: 'User'
     }
-  })
+  }).populate('answer')
   response.json(answered)
 })
 
@@ -76,6 +76,9 @@ router.post('/', async (request, response) => {
   if (!question.date) {
     question.date = new Date().toISOString()
   }
+  if (!question.answer) {
+    question.answer = null
+  }
   question.user = user
   const savedQuestion = await question.save()
 
@@ -87,8 +90,24 @@ router.post('/', async (request, response) => {
 
 router.put('/:id', async (req, res) => {
   const body = req.body
-  const answeredPost = await Question.findByIdAndUpdate(req.params.id, { isAnswered: true, answer: body.answer }, { new: true })
+  console.log('body', body)
+  const answer = new Answer(
+    {
+      answer: body.answer,
+      question: body._id
+    })
+  const savedAnswer = await answer.save()
+  // console.log('savedAnswer', savedAnswer)
+  const answeredPost = await Question.findByIdAndUpdate(req.params.id, { isAnswered: true, answer: savedAnswer._id }, { new: true }).populate('answer')
+  // console.log('answeredPost', answeredPost)
   res.json(answeredPost)
+})
+
+router.put('/editanswer/:id', async (req, res) => {
+  const body = req.body
+  const updatedAnswer = await Answer.findByIdAndUpdate(req.params.id, { answer: body.answer }, { new: true })
+  // console.log('answeredPost', answeredPost)
+  res.json(updatedAnswer)
 })
 
 router.put('/flag/:id', async (req, res) => {
