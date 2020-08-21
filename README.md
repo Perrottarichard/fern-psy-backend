@@ -14,25 +14,11 @@ Translation to Thai language credit Nilubon Sukawanich.
 ## Core Technologies
 | Technology  | For |
 | ------------| -------|
-| React | UI building|
-| Redux | state management |
-| React Redux | React bindings for Redux |
-| React Router | routing |
-| Axios | data fetching/sending | 
-| Reactstrap/fontAwesome | styling/icons |
+| Express | serve data|
+| Mongoose | object data modeling |
+| MongoDB Atlas | cloud data storage |
 
-## Client Features
-### User
-* Token authentication / local storage caching
-* Post to forum anonymously, or send private message to the counselor
-* comment on posts
-* view only your posts
-* flag inappropriate commments for admin review
-* "heart" anonymous posts to show support
-
-### Admin
-* view all users' contact information
-* approve and respond to forum posts
-* respond to private messages
-* edit previously posted forum responses
-* delete flagged comments
+## Server Features
+* Token authentication
+* Password encryption
+* User/Admin authentication
