@@ -1,4 +1,4 @@
-# Fern's Counseling Forum Demo (client)
+# Fern's Counseling Forum
 
 This demo project is meant to be an anonymous forum for people to post questions and comments about sensitive social/psychological topics.  Registration is required in order to post and comment, but anyone can view the forum. 
 
