@@ -11,11 +11,11 @@ router.get('/', async (request, response) => {
 
 //post a new user "signup" "register"
 router.post('/register', async (request, response) => {
-  const { password, name, username, gender, dateOfBirth, email } = request.body
+  const { password, email } = request.body
 
-  if (!password || password.length < 5 || !username || !name) {
+  if (!password || password.length < 5 || !email) {
     return response.status(400).send({
-      error: 'password must be at least 8 characters and you must include a username and name'
+      error: 'password must be at least 5 characters and you must include an email'
     })
   }
 
@@ -23,10 +23,6 @@ router.post('/register', async (request, response) => {
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
   const user = new User({
-    username,
-    name,
-    gender,
-    dateOfBirth,
     email,
     passwordHash
   })
