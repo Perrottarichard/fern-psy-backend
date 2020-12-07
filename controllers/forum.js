@@ -115,6 +115,7 @@ router.put('/flag/:id', async (req, res) => {
 })
 
 router.put('/addcomment/:id', async (request, response) => {
+  console.log(request.token)
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' })
