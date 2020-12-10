@@ -32,16 +32,17 @@ router.post('/register', async (request, response) => {
 })
 
 router.post('/createAvatar', async (request, response) => {
-  const { id, avatarProps, avatarName } = request.body
+  const id = request.body.id
+  const avatarProps = request.body.avatarProps
+  const avatarName = request.body.avatarName
 
-  const user = User.findById(id)
-  console.log(user)
+  console.log('id', id)
+  console.log('ap', avatarProps)
+  console.log('an', avatarName)
 
-  user.avatarName = avatarName
-  user.avatarProps = avatarProps
+  const user = User.findByIdAndUpdate(id, {avatarProps: {...avatarProps}, avatarName: avatarName}, {new: true})
   
-  const savedUser = await user.save()
-  response.json(savedUser)
+  response.json(user)
 })
 
 module.exports = router
