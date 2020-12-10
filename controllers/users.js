@@ -31,4 +31,17 @@ router.post('/register', async (request, response) => {
   response.json(savedUser)
 })
 
+router.post('/createAvatar', async (request, response) => {
+  const { id, avatarProps, avatarName } = request.body
+
+  const user = User.findById(id)
+  console.log(user)
+
+  user.avatarName = avatarName
+  user.avatarProps = avatarProps
+  
+  const savedUser = await user.save()
+  response.json(savedUser)
+})
+
 module.exports = router
