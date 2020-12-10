@@ -42,7 +42,7 @@ router.post('/createAvatar', async (request, response) => {
 
   const user = User.findByIdAndUpdate(id, {avatarProps: avatarProps, avatarName: avatarName}, {new: true})
   
-  response.json(user)
+  response.send(user)
 })
 
 module.exports = router
