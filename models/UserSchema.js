@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema({
   avatarProps: {
     accessory: String,
     bgColor: String,
-    bgShape: {type: String, default: 'squircle'},
+    bgShape: String,
     body: String,
     clothing: String,
     clothingColor: String,
@@ -23,12 +23,12 @@ const userSchema = mongoose.Schema({
     graphic: String,
     hair: String,
     hairColor: String,
-    hat: {type: String, default: 'none'},
-    hatColor: {type: String, default: 'black'},
-    lashes: {type: Boolean, default: true},
-    lipColor: {type: String, default: 'pink'},
+    hat: String,
+    hatColor: String,
+    lashes: Boolean,
+    lipColor: String,
     mouth: String,
-    showBackground: {type: Boolean, default: true},
+    showBackground: Boolean,
     skinTone: String
   }
 })

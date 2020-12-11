@@ -36,10 +36,6 @@ router.post('/createAvatar', async (request, response) => {
   const avatarProps = request.body.avatarProps
   const avatarName = request.body.avatarName
 
-  console.log('id', id)
-  console.log('ap', avatarProps)
-  console.log('an', avatarName)
-
   const user = await User.findByIdAndUpdate(id, {avatarProps: avatarProps, avatarName: avatarName}, {new: true})
   
   response.json(user)
