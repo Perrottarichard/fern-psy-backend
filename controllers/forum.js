@@ -50,12 +50,8 @@ router.put('/comment/unflag/:id', async (request, response) => {
 router.get('/answered', async (request, response) => {
   const answered = await Question.find({ isAnswered: true }).populate({
     path: 'comments',
-    model: 'Comment',
-    populate: {
-      path: 'user',
-      model: 'User'
-    }
-  }).populate('answer')
+    model: 'Comment'
+  }).populate('answer').populate({path: 'user', model: 'User'})
   response.json(answered)
 })
 
