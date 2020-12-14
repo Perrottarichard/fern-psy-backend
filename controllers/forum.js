@@ -169,6 +169,9 @@ router.put('/addreply/:id', async (request, response) => {
       path: 'user',
       model: 'User'
     }
+  }).populate({
+    path: 'user',
+    model: 'User'
   })
   response.json(replyAdded)
 })
