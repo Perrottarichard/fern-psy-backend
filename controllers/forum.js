@@ -4,6 +4,7 @@ const Question = require('../models/ForumQuestionSchema')
 const Comment = require('../models/ForumCommentSchema')
 const User = require('../models/UserSchema')
 const Answer = require('../models/ForumAnswerSchema')
+const Reply = require('../models/ReplySchema')
 const router = express.Router()
 
 router.get('/pending', async (request, response) => {
@@ -111,8 +112,6 @@ router.put('/flag/:id', async (req, res) => {
 })
 
 router.put('/addcomment/:id', async (request, response) => {
-  console.log(request.params.id)
-  console.log(request.body.comment)
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' })
@@ -140,6 +139,38 @@ router.put('/addcomment/:id', async (request, response) => {
     }
   })
   response.json(commentAdded)
+})
+
+router.put('/addreply/:id', async (request, response) => {
+  console.log(request.params.id)
+  console.log(request.body.reply)
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
+  const toAdd = {
+    reply: request.body.reply
+  }
+  const newReply = new Reply(toAdd)
+
+  newReply.user = user
+  const savedReply = await newReply.save()
+
+  user.replies = user.replies.concat(savedReply._id)
+  await user.save()
+
+  const replyAdded = await Comment.findByIdAndUpdate(request.params.id, {
+    $push: { replies: newReply }
+  }, { new: true }).populate({
+    path: 'replies',
+    model: 'Reply',
+    populate: {
+      path: 'user',
+      model: 'User'
+    }
+  })
+  response.json(replyAdded)
 })
 
 router.put('/heart/:id', async (req, res) => {

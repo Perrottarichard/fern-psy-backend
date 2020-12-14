@@ -9,6 +9,7 @@ const userSchema = mongoose.Schema({
   },
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+  replies: [{type: mongoose.Schema.Types.ObjectId, ref: 'Reply'}],
   avatarName: {type: String, default: 'anonymous'},
   avatarProps: {
     accessory: String,
