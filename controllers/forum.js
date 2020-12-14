@@ -52,7 +52,7 @@ router.get('/answered', async (request, response) => {
   const answered = await Question.find({ isAnswered: true }).populate({
     path: 'comments',
     model: 'Comment'
-  }).populate('answer').populate({path: 'user', model: 'User'}).populate({path: 'comments', populate: {path: 'user', model: 'User'}})
+  }).populate('answer').populate({path: 'user', model: 'User'}).populate({path: 'comments', populate: {path: 'user', model: 'User'}}).populate({path: 'comments', populate: {path: 'replies', model: 'Reply'}})
   response.json(answered)
 })
 
