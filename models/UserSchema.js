@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema({
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   replies: [{type: mongoose.Schema.Types.ObjectId, ref: 'Reply'}],
   avatarName: {type: String, default: 'anonymous'},
+  heartedPosts: [String],
   avatarProps: {
     accessory: String,
     bgColor: String,

@@ -142,8 +142,6 @@ router.put('/addcomment/:id', async (request, response) => {
 })
 
 router.put('/addreply/:id', async (request, response) => {
-  console.log(request.params.id)
-  console.log(request.body.reply)
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' })
@@ -178,6 +176,14 @@ router.put('/addreply/:id', async (request, response) => {
 
 router.put('/heart/:id', async (req, res) => {
   const body = req.body
+  const decodedToken = jwt.verify(req.token, process.env.SECRET)
+  if (!req.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
+  user.heartedPosts = user.heartedPosts.push(req.params.id)
+  await user.save()
+  
   const heartAdded = await Question.findByIdAndUpdate(req.params.id, body)
   res.json(heartAdded)
 })
