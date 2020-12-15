@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const uniqueValidator = require('mongoose-unique-validator')
+const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const userSchema = mongoose.Schema({
   passwordHash: String,
@@ -7,11 +7,11 @@ const userSchema = mongoose.Schema({
     type: String,
     unique: true,
   },
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
-  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-  replies: [{type: mongoose.Schema.Types.ObjectId, ref: 'Reply'}],
-  avatarName: {type: String, default: 'anonymous'},
-  heartedPosts: {type: Array},
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+  replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reply" }],
+  avatarName: { type: String, default: "anonymous" },
+  heartedPosts: [String],
   avatarProps: {
     accessory: String,
     bgColor: String,
@@ -31,21 +31,21 @@ const userSchema = mongoose.Schema({
     lipColor: String,
     mouth: String,
     showBackground: Boolean,
-    skinTone: String
-  }
-})
+    skinTone: String,
+  },
+});
 
-userSchema.set('toJSON', {
+userSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject._v
-    delete returnedObject.passwordHash
-  }
-})
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject._v;
+    delete returnedObject.passwordHash;
+  },
+});
 
-userSchema.plugin(uniqueValidator)
+userSchema.plugin(uniqueValidator);
 
-const User = mongoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema);
 
-module.exports = User
+module.exports = User;
