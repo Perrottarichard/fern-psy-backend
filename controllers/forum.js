@@ -174,18 +174,19 @@ router.put('/addreply/:id', async (request, response) => {
   response.json(replyAdded)
 })
 
-router.put('/heart/:id', async (req, res) => {
-  console.log('rpid',req.params.id)
-  const decodedToken = jwt.verify(req.token, process.env.SECRET)
-  if (!req.token || !decodedToken.id) {
+router.put('/heart/:id', async (request, response) => {
+  console.log('rpid',request.params.id)
+  console.log(request.token)
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' })
   }
   const user = await User.findById(decodedToken.id)
-  user.heartedPosts = user.heartedPosts.push(req.params.id)
+  user.heartedPosts = user.heartedPosts.push(request.params.id)
   await user.save()
 
-  const heartAdded = await Question.findByIdAndUpdate(req.params.id, { $inc: { likes : 1 }}, { new: true })
-  res.json(heartAdded)
+  const heartAdded = await Question.findByIdAndUpdate(request.params.id, { $inc: { likes : 1 }}, { new: true })
+  response.json(heartAdded)
 })
 
 router.get('/flagged', async (req, res) => {
