@@ -27,7 +27,7 @@ router.post('/', async (request, response) => {
 
   const token = jwt.sign(userForToken, process.env.SECRET)
 
-  response.status(200).send({ token, email: user.email, _id: user._id, avatarProps: user.avatarProps, avatarName: user.avatarName })
+  response.status(200).send({ token, email: user.email, _id: user._id, avatarProps: user.avatarProps, avatarName: user.avatarName, heartedPosts: user.heartedPosts })
 })
 
 module.exports = router
