@@ -179,12 +179,10 @@ router.put('/heart/:id', async (request, response) => {
   if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' })
   }
-  const user = await User.findById(decodedToken.id)
-  user.heartedPosts.push(request.params.id)
-  await user.save()
+  let updatedUser = await User.findByIdAndUpdate(decodedToken.id, { $push: { heartedPosts: request.params.id } }, {new: true})
 
-  const heartAdded = await Question.findByIdAndUpdate(request.params.id, { $inc: { likes : 1 }}, { new: true })
-  response.json(heartAdded)
+  await Question.findByIdAndUpdate(request.params.id, { $inc: { likes : 1 }}, { new: true })
+  response.json(updatedUser.heartedPosts)
 })
 
 router.get('/flagged', async (req, res) => {
