@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const express = require('express')
 const router = express.Router()
 const User = require('../models/UserSchema')
@@ -37,8 +38,15 @@ router.post('/createAvatar', async (request, response) => {
   const avatarName = request.body.avatarName
 
   const user = await User.findByIdAndUpdate(id, {avatarProps: avatarProps, avatarName: avatarName}, {new: true})
+
+  const userForToken = {
+    email: user.email,
+    id: user._id,
+  }
+
+  const token = jwt.sign(userForToken, process.env.SECRET)
   
-  response.json(user)
+  response.json({...user, token: token})
 })
 
 module.exports = router
