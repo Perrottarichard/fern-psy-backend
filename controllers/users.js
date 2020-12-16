@@ -46,7 +46,7 @@ router.post('/createAvatar', async (request, response) => {
 
   const token = jwt.sign(userForToken, process.env.SECRET)
   
-  response.json({ user: user, token: token})
+  response.status(200).send({ token, email: user.email, _id: user._id, avatarProps: user.avatarProps, avatarName: user.avatarName, heartedPosts: user.heartedPosts })
 })
 
 module.exports = router
