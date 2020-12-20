@@ -7,8 +7,7 @@ const articleSchema = mongoose.Schema({
   date: { type: Date, default: Date.now },
   likes: { type: Number, default: 0 },
   image: {
-    data: Buffer,
-    contentType: String,
+    type: String,
   },
 });
 

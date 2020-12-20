@@ -7,19 +7,32 @@ const Answer = require("../models/ForumAnswerSchema");
 const Reply = require("../models/ReplySchema");
 const Article = require("../models/ArticleSchema");
 const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
 const router = express.Router();
 
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, file.fieldname + "-" + Date.now());
-//   },
-// });
-const upload = multer();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  },
+  fileFilter: fileFilter,
+});
 
 router.get("/pending", async (request, response) => {
   const questions = await Question.find({ isAnswered: false }).populate("user");
@@ -115,17 +128,14 @@ router.post(
   "/postarticle",
   upload.single("file"),
   async (request, response, next) => {
-    // console.log(request.file);
-    const image = request.file;
+    const { file } = request;
     const { title, content } = request.body;
+    console.log(file.path);
 
     const fullObj = {
       title: title,
       content: content,
-      image: {
-        data: image.buffer,
-        contentType: "image/png",
-      },
+      image: file.path,
     };
     await Article.create(fullObj, (err, item) => {
       if (err) {
