@@ -6,17 +6,11 @@ const User = require("../models/UserSchema");
 const Answer = require("../models/ForumAnswerSchema");
 const Reply = require("../models/ReplySchema");
 const Article = require("../models/ArticleSchema");
+const { Storage } = require("@google-cloud/storage");
 const multer = require("multer");
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + file.originalname);
-  },
-});
+const storage = new Storage();
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
@@ -27,12 +21,14 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 1024 * 1024 * 5,
   },
   fileFilter: fileFilter,
 });
+
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
 
 router.get("/pending", async (request, response) => {
   const questions = await Question.find({ isAnswered: false }).populate("user");
@@ -128,22 +124,32 @@ router.post(
   "/postarticle",
   upload.single("file"),
   async (request, response, next) => {
-    const { file } = request;
     const { title, content } = request.body;
-    console.log(file.path);
 
-    const fullObj = {
-      title: title,
-      content: content,
-      image: file.path,
-    };
-    await Article.create(fullObj, (err, item) => {
-      if (err) {
-        console.log(err);
-      } else {
-        response.status(201).json(item);
-        console.log("article submitted successfully");
-      }
+    const blob = bucket.file(request.file.originalname);
+    const blobStream = blob.createWriteStream();
+    blobStream.on("error", (err) => {
+      next(err);
+    });
+    blobStream.on("finish", () => {
+      // The public URL can be used to directly access the file via HTTP.
+      const publicUrl = format(
+        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+      );
+      const fullObj = {
+        title: title,
+        content: content,
+        image: publicUrl,
+      };
+      await Article.create(fullObj, (err, item) => {
+        if (err) {
+          console.log(err);
+        } else {
+          response.status(201).json(item);
+          console.log("article submitted successfully");
+        }
+      });
+      blobStream.end(request.file.buffer);
     });
   }
 );

@@ -9,9 +9,7 @@ const userRouter = require("./controllers/users");
 const forumRouter = require("./controllers/forum");
 const adminRouter = require("./controllers/adminLogin");
 const contactRouter = require("./controllers/contact");
-const fs = require("fs");
 const path = require("path");
-const multer = require("multer");
 
 const app = express();
 app.use(middleware.tokenExtractor);
@@ -30,7 +28,6 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static("uploads"));
 app.use(express.static(path.join(__dirname, "build")));
 
 app.use("/api/login", loginRouter);
