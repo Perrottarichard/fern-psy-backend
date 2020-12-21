@@ -8,6 +8,7 @@ const Reply = require("../models/ReplySchema");
 const Article = require("../models/ArticleSchema");
 const { Storage } = require("@google-cloud/storage");
 const multer = require("multer");
+const { createWriteStream } = require("fs");
 const path = require("path");
 const router = express.Router();
 
@@ -30,42 +31,41 @@ const upload = multer({
   },
   fileFilter: fileFilter,
 });
-const bucket = storage.bucket("askfern.appspot.com");
+const askFernBucket = storage.bucket("askfern.appspot.com");
 
 router.post(
   "/postarticle",
   upload.single("file"),
-  (request, response, next) => {
-    // const { title, content } = request.body;
-    console.log(request.file);
-    const blob = bucket.file(request.file.originalname);
-    const blobStream = blob.createWriteStream();
-    blobStream.on("error", (err) => {
-      console.log(err);
-      next(err);
-    });
-    blobStream.on("finish", () => {
-      // The public URL can be used to directly access the file via HTTP.
-      const publicUrl = format(
-        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-      );
-      console.log(publicUrl);
-      response.status(200).send(publicUrl);
-      // const fullObj = {
-      //   title: title,
-      //   content: content,
-      //   image: publicUrl,
-      // };
-      // await Article.create(fullObj, (err, item) => {
-      //   if (err) {
-      //     console.log(err);
-      //   } else {
-      //     response.status(201).json(item);
-      //     console.log("article submitted successfully");
-      //   }
-      // });
-      blobStream.end(request.file.buffer);
-    });
+  async (request, response, next) => {
+    const { title, content } = request.body;
+    const { createReadStream } = request.file;
+    await new Promise((res) =>
+      createReadStream()
+        .pipe(
+          askFernBucket.file(request.file.originalname).createWriteStream({
+            resumable: false,
+            gzip: true,
+          })
+        )
+        .on("finish", (res) => {
+          const publicUrl = `https://storage.googleapis.com/${askFernBucket.name}/${request.file.originalname}`;
+          console.log(res);
+        })
+    );
+
+    // const fullObj = {
+    //   title: title,
+    //   content: content,
+    //   image: publicUrl,
+    // };
+    // await Article.create(fullObj, (err, item) => {
+    //   if (err) {
+    //     console.log(err);
+    //   } else {
+    //     response.status(201).json(item);
+    //     console.log("article submitted successfully");
+    //   }
+    // });
   }
 );
 
