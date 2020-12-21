@@ -8,9 +8,13 @@ const Reply = require("../models/ReplySchema");
 const Article = require("../models/ArticleSchema");
 const { Storage } = require("@google-cloud/storage");
 const multer = require("multer");
+const path = require("path");
 const router = express.Router();
 
-const storage = new Storage();
+const storage = new Storage({
+  keyFilename: path.join(__dirname, "../AskFern-df29817d688d.json"),
+  projectId: "askfern",
+});
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
@@ -19,7 +23,6 @@ const fileFilter = (req, file, cb) => {
     cb(null, false);
   }
 };
-
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -27,8 +30,44 @@ const upload = multer({
   },
   fileFilter: fileFilter,
 });
+const bucket = storage.bucket("askfern.appspot.com");
 
-const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+router.post(
+  "/postarticle",
+  upload.single("file"),
+  (request, response, next) => {
+    // const { title, content } = request.body;
+    console.log(request.file);
+    const blob = bucket.file(request.file.originalname);
+    const blobStream = blob.createWriteStream();
+    blobStream.on("error", (err) => {
+      console.log(err);
+      next(err);
+    });
+    blobStream.on("finish", () => {
+      // The public URL can be used to directly access the file via HTTP.
+      const publicUrl = format(
+        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+      );
+      console.log(publicUrl);
+      response.status(200).send(publicUrl);
+      // const fullObj = {
+      //   title: title,
+      //   content: content,
+      //   image: publicUrl,
+      // };
+      // await Article.create(fullObj, (err, item) => {
+      //   if (err) {
+      //     console.log(err);
+      //   } else {
+      //     response.status(201).json(item);
+      //     console.log("article submitted successfully");
+      //   }
+      // });
+      blobStream.end(request.file.buffer);
+    });
+  }
+);
 
 router.get("/pending", async (request, response) => {
   const questions = await Question.find({ isAnswered: false }).populate("user");
@@ -119,40 +158,6 @@ router.post("/", async (request, response) => {
 
   response.status(201).json(savedQuestion);
 });
-
-router.post(
-  "/postarticle",
-  upload.single("file"),
-  async (request, response, next) => {
-    const { title, content } = request.body;
-
-    const blob = bucket.file(request.file.originalname);
-    const blobStream = blob.createWriteStream();
-    blobStream.on("error", (err) => {
-      next(err);
-    });
-    blobStream.on("finish", async () => {
-      // The public URL can be used to directly access the file via HTTP.
-      const publicUrl = format(
-        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-      );
-      const fullObj = {
-        title: title,
-        content: content,
-        image: publicUrl,
-      };
-      await Article.create(fullObj, (err, item) => {
-        if (err) {
-          console.log(err);
-        } else {
-          response.status(201).json(item);
-          console.log("article submitted successfully");
-        }
-      });
-      blobStream.end(request.file.buffer);
-    });
-  }
-);
 
 router.get("/getAllArticles", async (request, response) => {
   const articles = await Article.find({});

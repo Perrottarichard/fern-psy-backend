@@ -1,3 +1,7 @@
 runtime: nodejs12
+
+env_variables:
+  GCLOUD_STORAGE_BUCKET: askfern.appspot.com
+
 automatic_scaling:
   max_instances: 2
