@@ -17,26 +17,29 @@ const storage = new Storage({
   projectId: "askfern",
 });
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
+// const fileFilter = (req, file, cb) => {
+//   if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+//     cb(null, true);
+//   } else {
+//     cb(null, false);
+//   }
+// };
+// const upload = multer({
+//   storage: multer.diskStorage({
+//     destination: function (req, file, cb) {
+//       cb(null, "uploads/");
+//     },
+//     filename: function (req, file, cb) {
+//       cb(null, file.originalname);
+//     },
+//   }),
+//   limits: {
+//     fileSize: 1024 * 1024 * 5,
+//   },
+//   fileFilter: fileFilter,
+// });
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "./uploads/");
-    },
-    filename: function (req, file, cb) {
-      cb(null, file.originalname);
-    },
-  }),
-  limits: {
-    fileSize: 1024 * 1024 * 5,
-  },
-  fileFilter: fileFilter,
+  storage: multer.memoryStorage(),
 });
 
 router.post(
@@ -44,7 +47,7 @@ router.post(
   upload.single("file"),
   async (request, response, next) => {
     const { title, content } = request.body;
-    await storage.bucket("askfern.appspot.com").upload(request.file.path, {
+    await storage.bucket("askfern.appspot.com").upload(request.file.buffer, {
       gzip: true,
       metadata: {
         cacheControl: "public, max-age=31536000",
@@ -64,12 +67,12 @@ router.post(
         console.log("article submitted successfully");
       }
     });
-    const toLocalRemove = `./uploads/${request.file.originalname}`;
-    try {
-      fs.unlinkSync(toLocalRemove);
-    } catch (error) {
-      console.log(error);
-    }
+    // const toLocalRemove = `./uploads/${request.file.originalname}`;
+    // try {
+    //   fs.unlinkSync(toLocalRemove);
+    // } catch (error) {
+    //   console.log("error trying to remove", error);
+    // }
   }
 );
 
