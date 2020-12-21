@@ -8,6 +8,7 @@ const Reply = require("../models/ReplySchema");
 const Article = require("../models/ArticleSchema");
 const { Storage } = require("@google-cloud/storage");
 const fs = require("fs");
+const stream = require("stream");
 const multer = require("multer");
 const path = require("path");
 const router = express.Router();
@@ -42,23 +43,40 @@ const upload = multer({
   storage: multer.memoryStorage(),
 });
 
+function getPublicUrl(filename) {
+  return `https://storage.googleapis.com/askfern.appspot.com/${filename}`;
+}
+
+const bucket = storage.bucket("askfern.appspot.com");
+
 router.post(
   "/postarticle",
   upload.single("file"),
   async (request, response, next) => {
-    const { title, content } = request.body;
-    await storage.bucket("askfern.appspot.com").upload(request.file.buffer, {
-      gzip: true,
+    const gcsname = Date.now() + request.file.originalname;
+    const file = bucket.file(gcsname);
+
+    const stream = file.createWriteStream({
       metadata: {
-        cacheControl: "public, max-age=31536000",
+        contentType: req.file.mimetype,
       },
+      resumable: false,
     });
-    const publicUrl = `https://storage.googleapis.com/askfern.appspot.com/${request.file.originalname}`;
+    stream.on("error", (err) => {
+      console.log("stream error");
+    });
+    stream.on("finish", async () => {
+      console.log("stream finished");
+    });
+    stream.end(request.file.buffer);
+
+    const { title, content } = request.body;
     const fullObj = {
       title: title,
       content: content,
-      image: publicUrl,
+      image: getPublicUrl(gcsname),
     };
+
     await Article.create(fullObj, (err, item) => {
       if (err) {
         console.log(err);
@@ -67,12 +85,6 @@ router.post(
         console.log("article submitted successfully");
       }
     });
-    // const toLocalRemove = `./uploads/${request.file.originalname}`;
-    // try {
-    //   fs.unlinkSync(toLocalRemove);
-    // } catch (error) {
-    //   console.log("error trying to remove", error);
-    // }
   }
 );
 
