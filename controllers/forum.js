@@ -7,8 +7,8 @@ const Answer = require("../models/ForumAnswerSchema");
 const Reply = require("../models/ReplySchema");
 const Article = require("../models/ArticleSchema");
 const { Storage } = require("@google-cloud/storage");
+const fs = require("fs");
 const multer = require("multer");
-const { createWriteStream } = require("fs");
 const path = require("path");
 const router = express.Router();
 
@@ -25,47 +25,51 @@ const fileFilter = (req, file, cb) => {
   }
 };
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "./uploads/");
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname);
+    },
+  }),
   limits: {
     fileSize: 1024 * 1024 * 5,
   },
   fileFilter: fileFilter,
 });
-const askFernBucket = storage.bucket("askfern.appspot.com");
 
 router.post(
   "/postarticle",
   upload.single("file"),
   async (request, response, next) => {
     const { title, content } = request.body;
-    const { createReadStream } = request.file;
-    await new Promise((res) =>
-      createReadStream()
-        .pipe(
-          askFernBucket.file(request.file.originalname).createWriteStream({
-            resumable: false,
-            gzip: true,
-          })
-        )
-        .on("finish", (res) => {
-          const publicUrl = `https://storage.googleapis.com/${askFernBucket.name}/${request.file.originalname}`;
-          console.log(res);
-        })
-    );
-
-    // const fullObj = {
-    //   title: title,
-    //   content: content,
-    //   image: publicUrl,
-    // };
-    // await Article.create(fullObj, (err, item) => {
-    //   if (err) {
-    //     console.log(err);
-    //   } else {
-    //     response.status(201).json(item);
-    //     console.log("article submitted successfully");
-    //   }
-    // });
+    await storage.bucket("askfern.appspot.com").upload(request.file.path, {
+      gzip: true,
+      metadata: {
+        cacheControl: "public, max-age=31536000",
+      },
+    });
+    const publicUrl = `https://storage.googleapis.com/askfern.appspot.com/${request.file.originalname}`;
+    const fullObj = {
+      title: title,
+      content: content,
+      image: publicUrl,
+    };
+    await Article.create(fullObj, (err, item) => {
+      if (err) {
+        console.log(err);
+      } else {
+        response.status(201).json(item);
+        console.log("article submitted successfully");
+      }
+    });
+    const toLocalRemove = `./uploads/${request.file.originalname}`;
+    try {
+      fs.unlinkSync(toLocalRemove);
+    } catch (error) {
+      console.log(error);
+    }
   }
 );
 
