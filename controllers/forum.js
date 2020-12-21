@@ -18,27 +18,6 @@ const storage = new Storage({
   projectId: "askfern",
 });
 
-// const fileFilter = (req, file, cb) => {
-//   if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-//     cb(null, true);
-//   } else {
-//     cb(null, false);
-//   }
-// };
-// const upload = multer({
-//   storage: multer.diskStorage({
-//     destination: function (req, file, cb) {
-//       cb(null, "uploads/");
-//     },
-//     filename: function (req, file, cb) {
-//       cb(null, file.originalname);
-//     },
-//   }),
-//   limits: {
-//     fileSize: 1024 * 1024 * 5,
-//   },
-//   fileFilter: fileFilter,
-// });
 const upload = multer({
   storage: multer.memoryStorage(),
 });
@@ -58,11 +37,11 @@ router.post(
 
     const stream = file.createWriteStream({
       metadata: {
-        contentType: req.file.mimetype,
+        contentType: request.file.mimetype,
       },
       resumable: false,
     });
-    stream.on("error", (err) => {
+    stream.on("error", () => {
       console.log("stream error");
     });
     stream.on("finish", async () => {
