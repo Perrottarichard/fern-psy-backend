@@ -40,11 +40,6 @@ app.get("*", (request, response) => {
   response.sendFile(path.join(__dirname + "/build/index.html"));
 });
 
-//test the backend router
-app.get("/api", (req, res) => {
-  res.send("<h1>Welcome to the backend!</h1>");
-});
-
 let PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {

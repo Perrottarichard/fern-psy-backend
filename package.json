@@ -11,6 +11,7 @@
     "gdeploy": "gcloud app deploy",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && npm run deploy"
   },
+  "homepage": "https://askfern.app/",
   "author": "",
   "license": "ISC",
   "dependencies": {
