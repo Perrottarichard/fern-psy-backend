@@ -290,6 +290,14 @@ router.put("/heart/:id", async (request, response) => {
   );
   response.json(updatedUser.heartedPosts);
 });
+router.put("/uparticleviews/:id", async (request, response) => {
+  let newArticle = await Article.findByIdAndUpdate(
+    request.params.id,
+    { $inc: { views: 1 } },
+    { new: true }
+  );
+  response.json(newArticle);
+});
 
 router.get("/flagged", async (req, res) => {
   const flaggedComments = await Comment.find({ isFlagged: true }).populate(
