@@ -10,6 +10,12 @@ const userSchema = mongoose.Schema({
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reply" }],
+  moods: [
+    {
+      date: { type: Date, default: Date.now },
+      mood: { type: Number },
+    },
+  ],
   avatarName: { type: String, default: "anonymous" },
   heartedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
   avatarProps: {
