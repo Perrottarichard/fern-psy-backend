@@ -10,12 +10,44 @@ router.get("/", async (request, response) => {
   const users = await User.find({});
   response.json(users.map((u) => u.toJSON()));
 });
+
 //cron job to add default mood to each user
 router.get("/cronmood", async (request, response) => {
   const users = await User.find({});
-  let now = DateTime.local();
-  users.map((u) => u.moods.map((m) => m.date));
-  console.log(now.day);
+  const now = DateTime.local();
+
+  const checkIfMoodToday = (userDoc) => {
+    const id = userDoc._id;
+    const usersWhoHaveMoodsToday = [];
+    let dateObjs = userDoc.moods.filter((m) => m.date);
+    let dateArr = dateObjs.map((d) => d.date);
+    let newArr = [];
+    dateArr.forEach((date) => {
+      let d = new DateTime(date);
+      newArr.push(d);
+    });
+    newArr.forEach((date) => {
+      if (date.day === now.day) {
+        usersWhoHaveMoodsToday.push(id);
+      }
+    });
+    return usersWhoHaveMoodsToday.includes(id);
+  };
+  let noMoodToday = [];
+
+  users.forEach((u) => {
+    if (!checkIfMoodToday(u)) {
+      noMoodToday.push(u._id);
+    }
+  });
+  noMoodToday.forEach(async (user) => {
+    let defaultMood = { mood: 2.5 };
+    await User.findByIdAndUpdate(
+      user,
+      { $push: { moods: defaultMood } },
+      { new: true }
+    );
+  });
   response.send("Job completed");
 });
 
@@ -76,9 +108,12 @@ router.put("/addmood", async (request, response) => {
   if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: "token missing or invalid" });
   }
+  console.log(request.body.mood);
+  let newMood = { mood: request.body.mood };
+  console.log(newMood);
   const user = await User.findByIdAndUpdate(
     decodedToken.id,
-    { $push: { moods: request.body.mood } },
+    { $push: { moods: newMood } },
     { new: true }
   );
   const userForToken = {

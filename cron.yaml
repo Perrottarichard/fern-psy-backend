@@ -1,0 +1,5 @@
+cron:
+  - description: "add default moods"
+    url: /api/users/cronmood
+    timezone: Asia/Bangkok
+    schedule: every day 23:59
