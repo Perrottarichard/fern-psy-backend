@@ -41,7 +41,7 @@ router.get("/cronmood", async (request, response) => {
     }
   });
   noMoodToday.forEach(async (user) => {
-    let defaultMood = { mood: 2.5 };
+    let defaultMood = { mood: 3 };
     await User.findByIdAndUpdate(
       user,
       { $push: { moods: defaultMood } },
