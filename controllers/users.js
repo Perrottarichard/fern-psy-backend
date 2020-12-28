@@ -23,7 +23,7 @@ router.get("/cronmood", async (request, response) => {
     let dateArr = dateObjs.map((d) => d.date);
     let newArr = [];
     dateArr.forEach((date) => {
-      let d = new DateTime(date);
+      let d = DateTime.fromJSDate(date);
       newArr.push(d);
     });
     newArr.forEach((date) => {
