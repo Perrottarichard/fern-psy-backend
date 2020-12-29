@@ -16,6 +16,8 @@ const userSchema = mongoose.Schema({
       mood: { type: Number },
     },
   ],
+  points: { type: Number, default: 0 },
+  level: { type: Number, default: 0 },
   avatarName: { type: String, default: "anonymous" },
   heartedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
   avatarProps: {

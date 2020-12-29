@@ -35,6 +35,8 @@ router.post("/", async (request, response) => {
     avatarName: user.avatarName,
     heartedPosts: user.heartedPosts,
     moods: user.moods,
+    points: user.points,
+    level: user.level,
   });
 });
 
