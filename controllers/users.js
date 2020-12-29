@@ -11,14 +11,26 @@ router.get("/", async (request, response) => {
   response.json(users.map((u) => u.toJSON()));
 });
 //get user points
-router.get("/userpointsandlevel", async (request, response) => {
-  const id = request.body.id;
+router.get("/userpointsandlevel/:id", async (request, response) => {
+  const id = request.params.id;
   const user = await User.findById(id);
   const stats = {
     points: user.points,
     level: user.level,
   };
   response.json(stats);
+});
+router.post("/adduserpoints/:id", async (request, response) => {
+  const id = request.params.id;
+  const user = await User.findById(id);
+  user.points = user.points + request.body.pointsToAdd;
+  response.json("success add points");
+});
+router.get("/levelupuser/:id", async (request, response) => {
+  const id = request.params.id;
+  const user = await User.findById(id);
+  user.level = user.level + 1;
+  response.json("success level up");
 });
 
 //cron job to add default mood to each user
