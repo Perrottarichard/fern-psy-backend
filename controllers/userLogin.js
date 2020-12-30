@@ -28,7 +28,7 @@ router.post("/", async (request, response) => {
   const token = jwt.sign(userForToken, process.env.SECRET);
 
   response.status(200).send({
-    token,
+    token: token,
     email: user.email,
     _id: user._id,
     avatarProps: user.avatarProps,

@@ -83,17 +83,34 @@ router.post("/register", async (request, response) => {
         "password must be at least 5 characters and you must include an email",
     });
   }
+  try {
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
 
-  const saltRounds = 10;
-  const passwordHash = await bcrypt.hash(password, saltRounds);
+    const user = await User.create({
+      email,
+      passwordHash,
+    });
+    const userForToken = {
+      email: user.email,
+      id: user._id,
+    };
+    const token = jwt.sign(userForToken, process.env.SECRET);
 
-  const user = new User({
-    email,
-    passwordHash,
-  });
-
-  const savedUser = await user.save();
-  response.json(savedUser);
+    response.status(200).send({
+      token: token,
+      email: user.email,
+      _id: user._id,
+      avatarProps: user.avatarProps,
+      avatarName: user.avatarName,
+      heartedPosts: user.heartedPosts,
+      moods: user.moods,
+      points: user.points,
+      level: user.level,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 router.post("/createAvatar", async (request, response) => {
