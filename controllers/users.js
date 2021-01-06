@@ -23,13 +23,15 @@ router.get("/userpointsandlevel/:id", async (request, response) => {
 router.post("/adduserpoints/:id", async (request, response) => {
   const id = request.params.id;
   const user = await User.findById(id);
-  user.points = user.points + request.body.pointsToAdd;
+  user.points += request.body.pointsToAdd;
+  await user.save();
   response.json("success add points");
 });
 router.get("/levelupuser/:id", async (request, response) => {
   const id = request.params.id;
   const user = await User.findById(id);
-  user.level = user.level + 1;
+  user.level += 1;
+  await user.save();
   response.json("success level up");
 });
 
@@ -149,9 +151,7 @@ router.put("/addmood", async (request, response) => {
   if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: "token missing or invalid" });
   }
-  console.log(request.body.mood);
   let newMood = { mood: request.body.mood };
-  console.log(newMood);
   const user = await User.findByIdAndUpdate(
     decodedToken.id,
     { $push: { moods: newMood } },
