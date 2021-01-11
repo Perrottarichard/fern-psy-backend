@@ -22,8 +22,6 @@ const userSchema = mongoose.Schema({
   heartedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
   avatarProps: {
     accessory: { type: String, default: "none" },
-    bgColor: { type: String, default: "blue" },
-    bgShape: { type: String, default: "circle" },
     body: String,
     clothing: { type: String, default: "shirt" },
     clothingColor: String,
@@ -38,7 +36,6 @@ const userSchema = mongoose.Schema({
     lashes: { type: Boolean, default: true },
     lipColor: { type: String, default: "pink" },
     mouth: { type: String, default: "lips" },
-    showBackground: { type: Boolean, default: true },
     skinTone: String,
   },
 });
