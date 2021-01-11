@@ -22,8 +22,8 @@ const userSchema = mongoose.Schema({
   heartedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
   avatarProps: {
     accessory: { type: String, default: "none" },
-    bgColor: String,
-    bgShape: { type: String, default: "squircle" },
+    bgColor: { type: String, default: "blue" },
+    bgShape: { type: String, default: "circle" },
     body: String,
     clothing: { type: String, default: "shirt" },
     clothingColor: String,

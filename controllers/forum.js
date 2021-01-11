@@ -167,13 +167,11 @@ router.put("/:id", async (req, res) => {
     question: body._id,
   });
   const savedAnswer = await answer.save();
-  // console.log('savedAnswer', savedAnswer)
   const answeredPost = await Question.findByIdAndUpdate(
     req.params.id,
     { isAnswered: true, answer: savedAnswer._id },
     { new: true }
   ).populate("answer");
-  // console.log('answeredPost', answeredPost)
   res.json(answeredPost);
 });
 
@@ -184,7 +182,6 @@ router.put("/editanswer/:id", async (req, res) => {
     { answer: body.answer },
     { new: true }
   );
-  // console.log('answeredPost', answeredPost)
   res.json(updatedAnswer);
 });
 
