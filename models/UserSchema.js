@@ -27,7 +27,7 @@ const userSchema = mongoose.Schema({
     clothingColor: String,
     eyebrows: String,
     eyes: { type: String, default: "normal" },
-    facialHair: String,
+    facialHair: { type: String, default: "none" },
     graphic: { type: String, default: "none" },
     hair: String,
     hairColor: String,
