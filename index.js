@@ -36,7 +36,7 @@ app.use("/api/forum", forumRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/contact", contactRouter);
 
-app.get("/*", (request, response) => {
+app.get("*", (request, response) => {
   response.sendFile(path.join(__dirname + "/build/index.html"));
 });
 
