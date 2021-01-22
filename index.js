@@ -28,7 +28,28 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "build")));
+app.use(
+  express.static(path.join(__dirname, "build"), {
+    etag: false,
+    lastModified: false,
+    setHeaders: (res, dest) => {
+      if (dest.indexOf("index.html") !== -1) {
+        res.set("Cache-Control", "no-store");
+      }
+    },
+  })
+);
+
+app.set("etag", false);
+app.disable("x-powered-by");
+
+app.use((req, res, next) => {
+  // hide x-powered-by for security reasons
+  res.set("X-Powered-By", "some server");
+  // This should apply to other routes
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 app.use("/api/login", loginRouter);
 app.use("/api/users", userRouter);
@@ -36,8 +57,27 @@ app.use("/api/forum", forumRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/contact", contactRouter);
 
-app.get("*", (request, response) => {
-  response.sendFile(path.join(__dirname + "/build/index.html"));
+// app.get("/*", (request, response) => {
+//   response.set("Cache-Control", "no-store");
+//   response.sendFile(path.join(__dirname + "/build/index.html"));
+// });
+
+app.get("/", (req, res) => {
+  // I think this is redundant
+  res.set("Cache-Control", "no-store");
+  res.sendFile(path.join(__dirname + "/build/index.html"), {
+    etag: false,
+    lastModified: false,
+  });
+});
+
+app.get("*", (req, res) => {
+  // I think this is redundant
+  res.set("Cache-Control", "no-store");
+  res.sendFile(path.join(__dirname + "/build/index.html"), {
+    etag: false,
+    lastModified: false,
+  });
 });
 
 let PORT = process.env.PORT || 3001;
